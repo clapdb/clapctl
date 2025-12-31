@@ -61,8 +61,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
  */
 server.setRequestHandler(
   CallToolRequestSchema,
-  async (request: { params: { name: string; arguments: unknown } }) => {
-    const { name, arguments: args } = request.params
+  // @ts-ignore - MCP SDK types are complex, using simplified handler
+  async (request: { params: { name: string; arguments?: Record<string, unknown> } }) => {
+    const { name, arguments: args = {} } = request.params
 
     try {
       const result = await handleToolCall(name, args as Record<string, unknown>)
