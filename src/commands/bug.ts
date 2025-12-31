@@ -10,7 +10,7 @@ export const bugCommand = new Command('bug')
     `
 Examples:
   $ clapctl bug
-`
+`,
   )
   .action(async () => {
     console.log('Opening GitHub issues page...')

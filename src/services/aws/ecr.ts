@@ -1,4 +1,4 @@
-import { ECRClient, DescribeImagesCommand } from '@aws-sdk/client-ecr'
+import { DescribeImagesCommand, ECRClient } from '@aws-sdk/client-ecr'
 import type { AwsCredentialIdentityProvider } from '@aws-sdk/types'
 
 export class ECRService {
@@ -6,7 +6,7 @@ export class ECRService {
 
   constructor(
     public readonly region: string,
-    credentials?: AwsCredentialIdentityProvider
+    credentials?: AwsCredentialIdentityProvider,
   ) {
     this.client = new ECRClient({ region, credentials })
   }
@@ -34,7 +34,7 @@ export class ECRService {
     const tag = latestImage.imageTags?.[0]
 
     if (!tag) {
-      throw new Error(`Latest image has no tag`)
+      throw new Error('Latest image has no tag')
     }
 
     return tag

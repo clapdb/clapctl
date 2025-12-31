@@ -1,14 +1,14 @@
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts'
 import { fromIni } from '@aws-sdk/credential-providers'
-import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts'
 import type { Ora } from 'ora'
-import { CloudFormationService, type CloudFormationStack } from './cloudformation'
-import { S3Service } from './s3'
-import { LambdaService } from './lambda'
-import { ECRService } from './ecr'
-import { QuotaService } from './quota'
 import type { DeployConfiguration } from '../../schemas'
 import { getArtifactsBucket } from '../../schemas'
 import type { UserPayload } from '../../schemas'
+import { CloudFormationService, type CloudFormationStack } from './cloudformation'
+import { ECRService } from './ecr'
+import { LambdaService } from './lambda'
+import { QuotaService } from './quota'
+import { S3Service } from './s3'
 
 export enum Action {
   Deploy = 'deploy',
@@ -23,11 +23,11 @@ export class AWSService {
   readonly ecr: ECRService
   readonly quota: QuotaService
 
-  private _region: string = ''
+  private _region = ''
 
   constructor(
     public readonly profile: string,
-    region?: string
+    region?: string,
   ) {
     const credentials = fromIni({ profile })
 
@@ -210,7 +210,7 @@ export class AWSService {
   private async showFirstProcessedResource(
     stackName: string,
     spinner: Ora,
-    action: Action
+    action: Action,
   ): Promise<boolean> {
     try {
       const status = await this.cloudformation.getResourcesStatus(stackName)

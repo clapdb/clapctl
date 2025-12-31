@@ -1,5 +1,5 @@
+import { GetCallerIdentityCommand, STSClient } from '@aws-sdk/client-sts'
 import { fromIni } from '@aws-sdk/credential-providers'
-import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts'
 
 export interface AWSCredentialConfig {
   profile: string

@@ -1,10 +1,10 @@
 import {
-  S3Client,
   DeleteBucketCommand,
   DeleteObjectsCommand,
-  ListObjectsV2Command,
   GetObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
+  S3Client,
 } from '@aws-sdk/client-s3'
 import type { AwsCredentialIdentityProvider } from '@aws-sdk/types'
 
@@ -13,7 +13,7 @@ export class S3Service {
 
   constructor(
     public readonly region: string,
-    credentials?: AwsCredentialIdentityProvider
+    credentials?: AwsCredentialIdentityProvider,
   ) {
     this.client = new S3Client({ region, credentials })
   }
@@ -35,7 +35,9 @@ export class S3Service {
       return
     }
 
-    const objects = response.Contents.filter((obj) => obj.Key).map((obj) => ({ Key: obj.Key! }))
+    const objects = response.Contents.filter((obj): obj is { Key: string } => Boolean(obj.Key)).map(
+      (obj) => ({ Key: obj.Key }),
+    )
 
     const deleteCommand = new DeleteObjectsCommand({
       Bucket: bucketName,
@@ -70,7 +72,9 @@ export class S3Service {
       Prefix: prefix,
     })
     const response = await this.client.send(command)
-    return response.Contents?.map((obj) => obj.Key!).filter(Boolean) ?? []
+    return (
+      response.Contents?.map((obj) => obj.Key).filter((key): key is string => Boolean(key)) ?? []
+    )
   }
 
   async getLatestTag(bucket: string): Promise<string> {

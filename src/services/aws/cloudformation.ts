@@ -1,13 +1,13 @@
 import {
   CloudFormationClient,
   CreateStackCommand,
-  UpdateStackCommand,
   DeleteStackCommand,
-  DescribeStacksCommand,
   DescribeStackResourcesCommand,
+  DescribeStacksCommand,
   GetTemplateCommand,
-  type Stack,
   type Parameter,
+  type Stack,
+  UpdateStackCommand,
 } from '@aws-sdk/client-cloudformation'
 import type { AwsCredentialIdentityProvider } from '@aws-sdk/types'
 import type { DeployConfiguration } from '../../schemas'
@@ -42,7 +42,7 @@ export class CloudFormationService {
 
   constructor(
     public readonly region: string,
-    credentials?: AwsCredentialIdentityProvider
+    credentials?: AwsCredentialIdentityProvider,
   ) {
     this.client = new CloudFormationClient({ region, credentials })
   }
@@ -89,7 +89,10 @@ export class CloudFormationService {
           ParameterKey: PARAMETER_NAMES.enablePrivateEndpoint,
           ParameterValue: String(config.enablePrivateEndpoint),
         },
-        { ParameterKey: PARAMETER_NAMES.enableLogging, ParameterValue: String(config.enableLogging) },
+        {
+          ParameterKey: PARAMETER_NAMES.enableLogging,
+          ParameterValue: String(config.enableLogging),
+        },
       ],
       Tags: [{ Key: 'Vendor', Value: 'ClapDB' }],
     })
@@ -133,7 +136,10 @@ export class CloudFormationService {
           ParameterKey: PARAMETER_NAMES.workerMemorySize,
           ParameterValue: String(config.workerMemorySize),
         },
-        { ParameterKey: PARAMETER_NAMES.enableLogging, ParameterValue: String(config.enableLogging) },
+        {
+          ParameterKey: PARAMETER_NAMES.enableLogging,
+          ParameterValue: String(config.enableLogging),
+        },
       ],
       Tags: [{ Key: 'Vendor', Value: 'ClapDB' }],
       UsePreviousTemplate: false,

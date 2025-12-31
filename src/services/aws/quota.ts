@@ -1,7 +1,7 @@
 import {
-  ServiceQuotasClient,
   GetServiceQuotaCommand,
   RequestServiceQuotaIncreaseCommand,
+  ServiceQuotasClient,
 } from '@aws-sdk/client-service-quotas'
 import type { AwsCredentialIdentityProvider } from '@aws-sdk/types'
 
@@ -13,7 +13,7 @@ export class QuotaService {
 
   constructor(
     public readonly region: string,
-    credentials?: AwsCredentialIdentityProvider
+    credentials?: AwsCredentialIdentityProvider,
   ) {
     this.client = new ServiceQuotasClient({ region, credentials })
   }

@@ -16,7 +16,7 @@ export const UserPayloadSchema = z.object({
       {
         message:
           'Password must contain at least one lowercase, uppercase, digit, and special character (!@#$%^&*)',
-      }
+      },
     ),
   tenant: z.string().min(1),
   database: z.string().min(1),

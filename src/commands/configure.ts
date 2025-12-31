@@ -1,5 +1,5 @@
-import { Command } from 'commander'
 import { input, password as passwordPrompt } from '@inquirer/prompts'
+import { Command } from 'commander'
 import { loadClapDBCredential } from '../credentials'
 import { error, mask } from '../utils'
 
@@ -13,7 +13,7 @@ export const configureCommand = new Command('configure')
 Examples:
   $ clapctl configure aws --profile default
   $ clapctl configure clapdb --stack-name clapdb-stack
-`
+`,
   )
   .action(async (target: string, options: { stackName: string }) => {
     const profile = configureCommand.parent?.opts().profile ?? 'default'
@@ -40,13 +40,13 @@ async function handleClapDB(stackName: string): Promise<void> {
     credential.dataApiEndpoint = await readConfigValue(
       'Data API URL Endpoint',
       credential.dataApiEndpoint,
-      false
+      false,
     )
 
     credential.licenseApiEndpoint = await readConfigValue(
       'License API URL Endpoint',
       credential.licenseApiEndpoint,
-      false
+      false,
     )
 
     credential.tenant = await readConfigValue('Tenant', credential.tenant, false)
@@ -69,7 +69,7 @@ async function handleClapDB(stackName: string): Promise<void> {
 async function readConfigValue(
   prompt: string,
   currentValue: string,
-  needMask: boolean
+  needMask: boolean,
 ): Promise<string> {
   const displayValue = currentValue ? (needMask ? mask(currentValue) : currentValue) : 'None'
 

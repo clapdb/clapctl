@@ -1,14 +1,14 @@
-import { homedir } from 'os'
-import { join, dirname } from 'path'
-import { mkdir, readFile, writeFile } from 'fs/promises'
-import { existsSync } from 'fs'
+import { existsSync } from 'node:fs'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { homedir } from 'node:os'
+import { dirname, join } from 'node:path'
+import { input, password as passwordPrompt } from '@inquirer/prompts'
 import {
   type ClapDBCredentialData,
+  ClapDBCredentialSchema,
   type CredentialFile,
   CredentialFileSchema,
-  ClapDBCredentialSchema,
 } from '../schemas'
-import { input, password as passwordPrompt } from '@inquirer/prompts'
 import { mask } from '../utils'
 
 const CREDENTIAL_DIR = '.clapdb'
@@ -18,13 +18,13 @@ export class ClapDBCredential {
   private credentialPath: string
   private credentialFile: CredentialFile | null = null
   public stackName: string
-  public dataApiEndpoint: string = ''
-  public licenseApiEndpoint: string = ''
-  public tenant: string = ''
-  public database: string = ''
-  public username: string = ''
-  public password: string = ''
-  public sandbox: boolean = false
+  public dataApiEndpoint = ''
+  public licenseApiEndpoint = ''
+  public tenant = ''
+  public database = ''
+  public username = ''
+  public password = ''
+  public sandbox = false
 
   constructor(stackName: string) {
     this.stackName = stackName
@@ -112,7 +112,11 @@ export class ClapDBCredential {
     }
   }
 
-  async readConfig(key: keyof ClapDBCredentialData, prompt: string, needMask: boolean): Promise<string> {
+  async readConfig(
+    key: keyof ClapDBCredentialData,
+    prompt: string,
+    needMask: boolean,
+  ): Promise<string> {
     const currentValue = this[key as keyof this] as string
 
     let displayValue = 'None'
@@ -169,7 +173,7 @@ export class ClapDBCredential {
         sandbox: this.sandbox,
       },
       null,
-      2
+      2,
     )
   }
 }

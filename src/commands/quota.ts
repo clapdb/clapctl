@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import { AWSService } from '../services/aws'
-import { success, error } from '../utils'
+import { error, success } from '../utils'
 
 export const quotaCommand = new Command('quota')
   .description('Manage AWS Lambda quota')
@@ -12,7 +12,7 @@ export const quotaCommand = new Command('quota')
 Examples:
   $ clapctl quota show
   $ clapctl quota request -v 10000
-`
+`,
   )
   .action(async (action: string, options: { value?: string }) => {
     const profile = quotaCommand.parent?.opts().profile ?? 'default'

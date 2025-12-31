@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+env:
+  VERSION: ${{ github.ref_name }}
+
 jobs:
   build:
     strategy:
@@ -38,7 +41,14 @@ jobs:
         run: bun install
 
       - name: Build
-        run: bun build ./src/index.ts --compile --target=${{ matrix.target }} --outfile=${{ matrix.name }}
+        run: |
+          bun build ./src/index.ts --compile \
+            --target=${{ matrix.target }} \
+            --outfile=${{ matrix.name }} \
+            --define "__APP_VERSION__=\"${{ env.VERSION }}\""
+
+      - name: Verify binary
+        run: ./${{ matrix.name }} --version
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -53,13 +63,108 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: dist
 
+      - name: Prepare release assets
+        run: |
+          mkdir -p release
+          for dir in dist/*/; do
+            name=$(basename "$dir")
+            cp "$dir$name" "release/$name"
+          done
+
+      - name: Generate checksums
+        working-directory: release
+        run: |
+          sha256sum * > checksums.txt
+          cat checksums.txt
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/**/*
+          files: release/*
           generate_release_notes: true
+
+  homebrew:
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout homebrew-tap
+        uses: actions/checkout@v4
+        with:
+          repository: clapdb/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+
+      - name: Download checksums
+        run: |
+          curl -sL "https://github.com/${{ github.repository }}/releases/download/${{ env.VERSION }}/checksums.txt" -o checksums.txt
+          cat checksums.txt
+
+      - name: Update Homebrew formula
+        run: |
+          VERSION="${{ env.VERSION }}"
+          VERSION_NUM="${VERSION#v}"
+
+          DARWIN_X64_SHA=$(grep 'clapctl-darwin-x64$' checksums.txt | cut -d' ' -f1)
+          DARWIN_ARM64_SHA=$(grep 'clapctl-darwin-arm64$' checksums.txt | cut -d' ' -f1)
+          LINUX_X64_SHA=$(grep 'clapctl-linux-x64$' checksums.txt | cut -d' ' -f1)
+          LINUX_ARM64_SHA=$(grep 'clapctl-linux-arm64$' checksums.txt | cut -d' ' -f1)
+
+          cat > homebrew-tap/Formula/clapctl.rb << EOF
+          class Clapctl < Formula
+            desc "ClapDB CLI - Manage ClapDB deployments on AWS"
+            homepage "https://github.com/clapdb/clapctl"
+            version "${VERSION_NUM}"
+            license "MIT"
+
+            on_macos do
+              on_intel do
+                url "https://github.com/${{ github.repository }}/releases/download/${VERSION}/clapctl-darwin-x64"
+                sha256 "${DARWIN_X64_SHA}"
+              end
+              on_arm do
+                url "https://github.com/${{ github.repository }}/releases/download/${VERSION}/clapctl-darwin-arm64"
+                sha256 "${DARWIN_ARM64_SHA}"
+              end
+            end
+
+            on_linux do
+              on_intel do
+                url "https://github.com/${{ github.repository }}/releases/download/${VERSION}/clapctl-linux-x64"
+                sha256 "${LINUX_X64_SHA}"
+              end
+              on_arm do
+                url "https://github.com/${{ github.repository }}/releases/download/${VERSION}/clapctl-linux-arm64"
+                sha256 "${LINUX_ARM64_SHA}"
+              end
+            end
+
+            def install
+              binary_name = "clapctl-#{OS.kernel_name.downcase}-#{Hardware::CPU.arch == :arm64 ? "arm64" : "x64"}"
+              bin.install binary_name => "clapctl"
+            end
+
+            test do
+              assert_match version.to_s, shell_output("#{bin}/clapctl --version")
+            end
+          end
+          EOF
+
+      - name: Commit and push
+        working-directory: homebrew-tap
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add Formula/clapctl.rb
+          git commit -m "Update clapctl to ${{ env.VERSION }}" || echo "No changes to commit"
+          git push

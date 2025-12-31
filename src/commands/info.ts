@@ -11,12 +11,12 @@ export const infoCommand = new Command('info')
 Examples:
   $ clapctl info
   $ clapctl info -n clapdb-stack
-`
+`,
   )
   .action(async (options: { stackName?: string }) => {
     console.log('ClapDB CLI Information')
     console.log('======================')
-    console.log(`Version: 0.1.0`)
+    console.log('Version: 0.1.0')
     console.log(`Runtime: Bun ${Bun.version}`)
     console.log()
 

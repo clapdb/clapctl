@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { AWSService } from '../services/aws'
 import { loadClapDBCredential } from '../credentials'
-import { success, error } from '../utils'
+import { AWSService } from '../services/aws'
+import { error, success } from '../utils'
 
 export const licenseCommand = new Command('license')
   .description('Manage ClapDB license')
@@ -14,7 +14,7 @@ export const licenseCommand = new Command('license')
 Examples:
   $ clapctl license show -n clapdb-stack
   $ clapctl license upgrade -n clapdb-stack -l "NEW_LICENSE_KEY"
-`
+`,
   )
   .action(async (action: string, options: { stackName?: string; license?: string }) => {
     const profile = licenseCommand.parent?.opts().profile ?? 'default'

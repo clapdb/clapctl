@@ -1,4 +1,4 @@
-import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda'
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
 import type { AwsCredentialIdentityProvider } from '@aws-sdk/types'
 
 export class LambdaService {
@@ -6,7 +6,7 @@ export class LambdaService {
 
   constructor(
     public readonly region: string,
-    credentials?: AwsCredentialIdentityProvider
+    credentials?: AwsCredentialIdentityProvider,
   ) {
     this.client = new LambdaClient({ region, credentials })
   }
