@@ -1,8 +1,8 @@
-import { Command } from 'commander'
 import { confirm } from '@inquirer/prompts'
-import { AWSService, Action } from '../services/aws'
+import { Command } from 'commander'
 import { loadClapDBCredential } from '../credentials'
-import { success, error, spinner } from '../utils'
+import { AWSService, Action } from '../services/aws'
+import { error, spinner, success } from '../utils'
 
 export const deleteCommand = new Command('delete')
   .description('Delete ClapDB service deployment')
@@ -15,7 +15,7 @@ export const deleteCommand = new Command('delete')
 Examples:
   $ clapctl delete -n clapdb-stack
   $ clapctl delete -n clapdb-stack -y --with-s3
-`
+`,
   )
   .action(async (options: { stackName?: string; yes?: boolean; withS3?: boolean }) => {
     const profile = deleteCommand.parent?.opts().profile ?? 'default'
@@ -51,7 +51,7 @@ Examples:
       // Delete the stack
       const cloudformationUrl = await awsService.deleteService(
         options.stackName,
-        options.withS3 ?? false
+        options.withS3 ?? false,
       )
       console.log(`Deployment details: ${cloudformationUrl}`)
 

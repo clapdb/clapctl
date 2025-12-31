@@ -1,27 +1,32 @@
 import { Command } from 'commander'
 import {
+  authCommand,
+  bugCommand,
   configureCommand,
-  deployCommand,
-  statusCommand,
-  deleteCommand,
-  updateCommand,
-  sqlCommand,
-  userCommand,
   datasetCommand,
-  infoCommand,
+  deleteCommand,
+  deployCommand,
   doctorCommand,
+  infoCommand,
   licenseCommand,
   quotaCommand,
   regressCommand,
-  bugCommand,
+  sqlCommand,
+  statusCommand,
+  updateCommand,
+  userCommand,
 } from './commands'
+
+// Version injected at build time via --define
+declare const __APP_VERSION__: string
+const version = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '0.0.0-dev'
 
 export const program = new Command()
 
 program
   .name('clapctl')
   .description('ClapDB CLI - Manage ClapDB deployments on AWS')
-  .version('0.1.0')
+  .version(version)
   .option('-p, --profile <profile>', 'AWS profile to use', 'default')
   .option('-v, --verbose', 'Enable verbose output')
 
@@ -40,3 +45,4 @@ program.addCommand(licenseCommand)
 program.addCommand(quotaCommand)
 program.addCommand(regressCommand)
 program.addCommand(bugCommand)
+program.addCommand(authCommand)

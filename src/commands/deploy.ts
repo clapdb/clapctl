@@ -1,9 +1,9 @@
-import { Command } from 'commander'
 import Table from 'cli-table3'
+import { Command } from 'commander'
+import { loadAllCredentials, loadClapDBCredential } from '../credentials'
+import { type DeployConfiguration, UserPayloadSchema, getArtifactsBucket } from '../schemas'
 import { AWSService, Action } from '../services/aws'
-import { loadClapDBCredential, loadAllCredentials } from '../credentials'
-import { type DeployConfiguration, getArtifactsBucket, UserPayloadSchema } from '../schemas'
-import { success, error, spinner, generateRandomPassword, isPasswordValid } from '../utils'
+import { error, generateRandomPassword, isPasswordValid, spinner, success } from '../utils'
 
 export const deployCommand = new Command('deploy')
   .description('Deploy ClapDB service')
@@ -30,7 +30,7 @@ Examples:
   $ clapctl deploy -n clapdb-stack
   $ clapctl deploy -n clapdb-stack -u admin -p "MyP@ssw0rd!"
   $ clapctl deploy --list all
-`
+`,
   )
   .action(async (options) => {
     const profile = deployCommand.parent?.opts().profile ?? 'default'
@@ -85,7 +85,9 @@ async function deploy(awsService: AWSService, options: DeployOptions): Promise<v
   }
 
   if (!isPasswordValid(password)) {
-    error(`Password: ${password} is invalid. Must contain lowercase, uppercase, digit, and special character.`)
+    error(
+      `Password: ${password} is invalid. Must contain lowercase, uppercase, digit, and special character.`,
+    )
     return
   }
 
@@ -128,6 +130,7 @@ async function deploy(awsService: AWSService, options: DeployOptions): Promise<v
     enableLogging: options.logging ?? false,
     clapdbVersion: options.commit,
     artifactsBucket: getArtifactsBucket(awsService.region),
+    updateBuiltinTemplate: false,
   }
 
   // Deploy the stack
@@ -183,9 +186,7 @@ async function listDeployments(awsService: AWSService, onlyLocal: boolean): Prom
 
   const stacks = await awsService.listClapDBStacks()
 
-  const filteredStacks = onlyLocal
-    ? stacks.filter((stack) => credentials?.has(stack.name))
-    : stacks
+  const filteredStacks = onlyLocal ? stacks.filter((stack) => credentials?.has(stack.name)) : stacks
 
   const table = new Table({
     head: ['Name', 'Status', 'CreateAt'],

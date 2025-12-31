@@ -3,7 +3,7 @@ const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 const digits = '0123456789'
 const special = '!@#$%^&*'
 
-export function generateRandomPassword(length: number = 12): string {
+export function generateRandomPassword(length = 12): string {
   const allChars = lowercase + uppercase + digits + special
 
   // Ensure at least one of each type

@@ -13,7 +13,7 @@ export const sqlCommand = new Command('sql')
 Examples:
   $ clapctl sql "SELECT * FROM users LIMIT 10" -n clapdb-stack
   $ clapctl sql "SHOW TABLES"
-`
+`,
   )
   .action(async (query: string | undefined, options: { stackName: string; local?: boolean }) => {
     if (!query) {
@@ -26,7 +26,7 @@ Examples:
 
       if (!credential.isValid()) {
         error(`Credential for stack '${options.stackName}' not found or invalid.`)
-        error('Run: clapctl configure clapdb -n ' + options.stackName)
+        error(`Run: clapctl configure clapdb -n ${options.stackName}`)
         return
       }
 

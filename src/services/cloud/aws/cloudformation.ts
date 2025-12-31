@@ -10,7 +10,7 @@ import {
   UpdateStackCommand,
 } from '@aws-sdk/client-cloudformation'
 import type { AwsCredentialIdentityProvider } from '@aws-sdk/types'
-import type { DeployConfiguration } from '../../schemas'
+import type { DeployConfiguration } from '../../../schemas'
 
 export interface CloudFormationStack {
   name: string

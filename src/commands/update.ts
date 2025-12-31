@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { AWSService, Action } from '../services/aws'
 import { type DeployConfiguration, getArtifactsBucket } from '../schemas'
-import { success, error, spinner } from '../utils'
+import { AWSService, Action } from '../services/aws'
+import { error, spinner, success } from '../utils'
 
 export const updateCommand = new Command('update')
   .description('Update ClapDB service deployment')
@@ -20,7 +20,7 @@ Examples:
   $ clapctl update -n clapdb-stack
   $ clapctl update -n clapdb-stack --lambda-memory-size 4096
   $ clapctl update -n clapdb-stack -c latest
-`
+`,
   )
   .action(async (options) => {
     const profile = updateCommand.parent?.opts().profile ?? 'default'

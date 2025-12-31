@@ -11,13 +11,13 @@ export const statusCommand = new Command('status')
     `
 Examples:
   $ clapctl status -n clapdb-stack
-`
+`,
   )
   .action(async (options: { stackId?: string; stackName?: string }) => {
     const profile = statusCommand.parent?.opts().profile ?? 'default'
 
     // Get stack identifier
-    let stackId = options.stackId ?? options.stackName
+    const stackId = options.stackId ?? options.stackName
     if (!stackId) {
       statusCommand.help()
       return
