@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "clapdb": {
+      "type": "stdio",
+      "command": "bun",
+      "args": ["run", "src/mcp/server.ts"],
+      "env": {
+        "AWS_REGION": "${AWS_REGION}",
+        "AWS_PROFILE": "${AWS_PROFILE}"
+      }
+    }
+  }
+}
